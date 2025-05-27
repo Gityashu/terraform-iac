@@ -5,6 +5,8 @@ on:
     branches:
       - main
 
+  workflow_dispatch: # Allows manual execution for destroy
+
 jobs:
   terraform:
     runs-on: ubuntu-latest
@@ -42,4 +44,9 @@ jobs:
 
     - name: Apply Terraform Changes
       run: terraform apply -auto-approve tfplan
+      working-directory: terraform/
+
+    - name: Manual Destroy Option
+      if: github.event_name == 'workflow_dispatch'  # Only runs if triggered manually
+      run: terraform destroy -auto-approve
       working-directory: terraform/
