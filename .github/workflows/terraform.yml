@@ -19,8 +19,8 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Install Terraform
-      uses: hashicorp/setup-terraform@v2
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: latest
 
@@ -32,6 +32,14 @@ jobs:
       run: terraform validate
       working-directory: terraform/
 
+    - name: Format Terraform Code
+      run: terraform fmt -check
+      working-directory: terraform/
+
+    - name: Plan Terraform Changes
+      run: terraform plan -out=tfplan
+      working-directory: terraform/
+
     - name: Apply Terraform Changes
-      run: terraform apply -auto-approve
+      run: terraform apply -auto-approve tfplan
       working-directory: terraform/
