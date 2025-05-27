@@ -1,0 +1,37 @@
+name: Terraform AWS EC2 Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Install Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: latest
+
+    - name: Initialize Terraform
+      run: terraform init
+      working-directory: terraform/
+
+    - name: Validate Terraform Configuration
+      run: terraform validate
+      working-directory: terraform/
+
+    - name: Apply Terraform Changes
+      run: terraform apply -auto-approve
+      working-directory: terraform/
