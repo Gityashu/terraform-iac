@@ -2,7 +2,7 @@
 
 # Create a VPC 
 resource "aws_vpc" "main" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
   enable_dns_support   = true
 
@@ -17,7 +17,7 @@ resource "aws_subnet" "public" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.1.0/24"
   availability_zone       = "${var.aws_region}a" # Example AZ, adjust as needed
-  map_public_ip_on_launch = true # Instances in this subnet will get a public IP
+  map_public_ip_on_launch = true                 # Instances in this subnet will get a public IP
 
   tags = {
     Name = "${var.project_name}-public-subnet"
@@ -107,7 +107,7 @@ resource "aws_iam_role" "ec2_cloudwatch_role" {
     Statement = [
       {
         Action = ["sts:AssumeRole"
-                    ],
+        ],
         Effect = "Allow",
         Principal = {
           Service = "ec2.amazonaws.com"
@@ -155,13 +155,13 @@ data "aws_ami" "amazon_linux_2" {
 
 # Create the EC2 instance
 resource "aws_instance" "web_server" {
-  ami           = data.aws_ami.amazon_linux_2.id
-  instance_type = var.instance_type
-  key_name      = var.key_pair_name
-  subnet_id     = aws_subnet.public.id
-  security_groups = [aws_security_group.ec2_sg.id]
+  ami                         = data.aws_ami.amazon_linux_2.id
+  instance_type               = var.instance_type
+  key_name                    = var.key_pair_name
+  subnet_id                   = aws_subnet.public.id
+  security_groups             = [aws_security_group.ec2_sg.id]
   associate_public_ip_address = true # Ensure public IP is assigned
-  iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
+  iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
 
 
   user_data = <<-EOF
@@ -193,7 +193,7 @@ resource "aws_instance" "web_server" {
               sudo systemctl restart httpd
               EOF
 
-  
+
   tags = {
     Name = "${var.project_name}-web-server"
   }
@@ -216,10 +216,10 @@ resource "aws_cloudwatch_dashboard" "ec2_dashboard" {
           metrics = [
             ["AWS/EC2", "CPU Utilization", "Insta nceId", "aws_instance.web_server.id"]
           ],
-          period    = 300,
-          stat      = "Average",
-          region    = var.aws_region, 
-          title     = "EC2 CPU Utilization"
+          period = 300,
+          stat   = "Average",
+          region = var.aws_region,
+          title  = "EC2 CPU Utilization"
         }
       }
     ]
